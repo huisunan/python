@@ -6,8 +6,10 @@ class myWindow(Ui_MainWindow, QtWidgets.QMainWindow):
         super(myWindow, self).__init__(parent)
         self.setupUi(self)
 
-# if __name__ == "__main__":
-#     app = QtWidgets.QApplication(sys.argv)
-#     w = myWindow()
-#     w.show()
-#     sys.exit(app.exec_())
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    w = myWindow()
+    w.show()
+    w.textBrowser.append("1111")
+    w.textBrowser.append("2222")
+    sys.exit(app.exec_())

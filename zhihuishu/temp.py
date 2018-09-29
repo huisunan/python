@@ -4,11 +4,18 @@ import re
 import time
 import random
 from selenium.webdriver.common.action_chains import ActionChains
+from datetime import datetime
 
 class zhiHui():
     def __init__(self):
-        self.browser = webdriver.Chrome()
+        #self.browser = webdriver.Chrome()
         #self.browser = getChrome.getChrome()
+        self.textBrower = None
+    def setBrowser(self,str):
+        if str == "no":
+            self.browser = getChrome.getChrome()
+        else:
+            self.browser = webdriver.Chrome()
     def openUrl(self, url):
         self.browser.get(url)
 
@@ -31,7 +38,7 @@ class zhiHui():
         self.openUrl("https://www.zhihuishu.com")
         self.click(self.browser.find_elements_by_css_selector("#login-register li a")[0])
         self.log("正在打开登陆页面")
-        self.sleep(3,5)
+        self.sleep(5,7)
 
     def login(self,username,password):
         if self.isUrlMatch("https://passport.zhihuishu.com/login?"):
@@ -55,8 +62,12 @@ class zhiHui():
     def setStudyList(self):
         if self.isUrlSearch("http://online.zhihuishu.com/onlineSchool/student/index"):
             self.studyList = self.browser.find_elements_by_css_selector(".speedPromote_btn")
+            self.sutdyListName = self.browser.find_elements_by_css_selector(".courseTit")
+            self.btns = self.browser.find_elements_by_css_selector(".sliderDotItem")
         else:
             self.log("登陆错误")
+
+
     def getWindows(self):
         self.windows = self.browser.window_handles
         return self.windows
@@ -64,6 +75,10 @@ class zhiHui():
     def switchWindow(self, window):
         self.browser.switch_to_window(window)
         self.log("切换窗口")
+
+
+
+
 
 
 
@@ -87,7 +102,7 @@ class zhiHui():
     #开始自动刷课
     def study(self):
         while True:
-            self.browser.save_screenshot("a.png")
+            #self.browser.save_screenshot("a.png")
             self.openBar()
             time.sleep(random.randint(1, 2))
             currentTime = self.browser.find_elements_by_css_selector(".currentTime")[0].text
@@ -153,10 +168,15 @@ class zhiHui():
                 self.log("启动加速")
 
 
-
+    def setTextBrower(self,brow):
+        self.textBrower = brow
        #####工具
     def log(self,txt):
-        print(txt)
+        txt = datetime.now().strftime("%H:%M:%S") +txt
+        if self.textBrower != None:
+            self.textBrower.append("["+txt+"] ")
+        else:
+            print(txt)
 
     def isUrlMatch(self,url):
         if re.match(url, self.browser.current_url):
@@ -171,6 +191,7 @@ class zhiHui():
             return False
 
 if __name__ == "__main__":
+    print("调用main")
     z = zhiHui()
     z.turnLoginUrl()
     z.login("18860825826", "liyin780816")
@@ -178,14 +199,10 @@ if __name__ == "__main__":
         if z.isLogin():
             z.setStudyList()
             break
-    z.click(z.studyList[1])
+    z.click(z.browser.find_elements_by_css_selector(".sliderDotItem")[1])
+    time.sleep(1)
+    z.click(z.studyList[2])
     w = z.getWindows()
     z.switchWindow(w[-1])
-    while True:
-        if z.isUrlSearch("http://study.zhihuishu.com/learning/"):
-            z.sleep(3,5)
-            z.closeWarning()
-            z.sleep(3,5)
-            z.closeTip()
-            break
+
     z.study()
