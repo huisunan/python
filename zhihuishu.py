@@ -34,6 +34,8 @@ if __name__ == "__main__":
     print(browser.current_url)
     studyList = browser.find_elements_by_css_selector(".speedPromote_btn")#学习按钮
     time.sleep(random.randint(5,10))
+
+
     studyList[1].click() #在新窗口打开的链接
     time.sleep(random.randint(5, 10))
     windows = browser.window_handles
@@ -62,6 +64,7 @@ if __name__ == "__main__":
         print("关闭提示框")
         time.sleep(random.randint(1, 2))
 
+    #关闭提示卡
     tip1 = browser.find_elements_by_css_selector("#j-assess-criteria_popup")[0].get_attribute("style")
     if re.search("none", tip1) == None:
         mousemove(browser.find_elements_by_css_selector(".popup_delete")[0])
@@ -80,7 +83,7 @@ if __name__ == "__main__":
         print("%s/%s"%(currentTime, totalTime))
 
         #自动跳转
-        if re.search("100%", browser.find_elements_by_css_selector(".progressbar_box>div")[0].get_attribute("style")):
+        if re.search("100%", browser.find_elements_by_css_selector(".progressbar_box>div")[0].get_attribute("style")) or (currentTime == totalTime):
             openBar()
             try:
                 browser.find_elements_by_css_selector("#nextBtn")[0].click()
