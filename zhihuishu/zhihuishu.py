@@ -6,7 +6,6 @@
 #
 # WARNING! All changes made in this file will be lost!
 from PyQt5 import QtCore, QtGui, QtWidgets
-from form import Ui_Form
 from selenium import webdriver
 import re
 import time
