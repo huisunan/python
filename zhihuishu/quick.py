@@ -19,6 +19,7 @@ class zhihuishu():
         element.click()
 
 
+
     def setTextBrower(self, brow):
         self.textBrower = brow
 

@@ -172,9 +172,9 @@ class zhiHui():
         self.textBrower = brow
        #####工具
     def log(self,txt):
-        txt = datetime.now().strftime("%H:%M:%S") +txt
+        tim = datetime.now().strftime("%H:%M:%S")
         if self.textBrower != None:
-            self.textBrower.append("["+txt+"] ")
+            self.textBrower.append("["+tim+"] "+txt)
         else:
             print(txt)
 
