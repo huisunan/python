@@ -58,7 +58,7 @@ class zhihuishu():
         while True:
             if re.search("http://study.zhihuishu.com/learning/videoList", self.browser.current_url) == None:
                 self.log("没有正确打开页面")
-                return
+                break
             #self.browser.save_screenshot("a.png")
             self.openBar()
             time.sleep(random.randint(1, 2))
