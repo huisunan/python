@@ -1,15 +1,16 @@
 import re
+
+from PyQt5.QtWidgets import QProgressBar, QLabel
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
-from  datetime import datetime
+from datetime import datetime
 import time
 import random
-from PyQt5 import QtWidgets
 class zhihuishu():
     def __init__(self):
         pass
-    def setBrowser(self):
-        self.browser = webdriver.Chrome()
+    def setBrowser(self,s=None):
+        self.browser = webdriver.Edge()
         self.browser.get("https://www.zhihuishu.com")
     def __mousemove(self, element):
         ActionChains(self.browser).move_to_element(element)
@@ -18,6 +19,11 @@ class zhihuishu():
         self.__mousemove(element)
         element.click()
 
+    def setLabel(self,label1:QLabel):
+        self.label = label1
+
+    def setProgressBar(self,bar1:QProgressBar):
+        self.bar = bar1
 
 
     def setTextBrower(self, brow):
@@ -47,6 +53,7 @@ class zhihuishu():
     #关闭学习卡片
     def closeTip(self):
         tip1 = self.browser.find_elements_by_css_selector("#j-assess-criteria_popup")[0].get_attribute("style")
+        #tip1 = self.browser.find_elements_by_css_selector("#j-assess-criteria_popup")[0].get_attribute("style")
         if re.search("none", tip1) == None:
             self.click(self.browser.find_elements_by_css_selector(".popup_delete")[0])
             self.log("关闭显示卡")
@@ -55,23 +62,38 @@ class zhihuishu():
 
     #开始自动刷课
     def study(self):
+        name = None
         while True:
             if re.search("http://study.zhihuishu.com/learning/videoList", self.browser.current_url) == None:
                 self.log("没有正确打开页面")
                 break
-            #self.browser.save_screenshot("a.png")
+            if name is None:
+                name = self.browser.find_element_by_id("lessonOrder").text
+                self.log(name)
+                self.label.setText(name)
             self.openBar()
-            time.sleep(random.randint(1, 2))
-            currentTime = self.browser.find_elements_by_css_selector(".currentTime")[0].text
+            time.sleep(1)
+            try:
+                self.openBar()
+                currentTime = self.browser.find_elements_by_css_selector(".currentTime")[0].text
+                totalTime = self.browser.find_elements_by_css_selector(".duration")[0].text
+                cArr = currentTime.split(':')
+                tArr = totalTime.split(':')
+                ic = int(cArr[0]) * 60 * 60 + int(cArr[1]) * 60 + int(cArr[2])
+                it = int(tArr[0]) * 60 * 60 + int(tArr[1]) * 60 + int(tArr[2])
+                # self.bar.valueChanged(int(ic * 100 / it))
+                self.bar.setValue(int((ic * 100) / it))
 
-            totalTime = self.browser.find_elements_by_css_selector(".duration")[0].text
-
-            self.log("%s/%s" % (currentTime, totalTime))
-
+            except :
+                self.log('异常')
             # 自动跳转
-            if re.search("100%",
-                         self.browser.find_elements_by_css_selector(".progressbar_box>div")[0].get_attribute("style")) \
-                    or (currentTime == totalTime and currentTime != "" and currentTime != ""):
+            if re.search("100%",self.browser.find_elements_by_css_selector(".progressbar_box>div")[0].get_attribute("style")) or (currentTime == totalTime and currentTime != "" and currentTime != ""):
+
+                lastLesson = self.browser.find_elements_by_css_selector(".next_lesson_bg")[0].get_attribute("style")
+                if re.search("none", lastLesson) != None and currentTime == totalTime:
+                    self.log("success")
+                    break
+
                 self.openBar()
                 try:
                     self.click(self.browser.find_elements_by_css_selector("#nextBtn")[0])
@@ -79,15 +101,16 @@ class zhihuishu():
                     self.openBar()
                     self.click(self.browser.find_elements_by_css_selector("#nextBtn")[0])
                 self.log("下一节")
-                time.sleep(10)
-                lastLesson = self.browser.find_elements_by_css_selector(".next_lesson_bg")[0].get_attribute("style")
-                if re.search("none", lastLesson) != None and currentTime == totalTime:
-                    self.log("success")
-                    break
+                name = None
+                time.sleep(5)
                 continue
 
             # 最后一节 .next_lesson_bg
 
+            if re.search("volumeNone", self.browser.find_element_by_class_name("volumeBox").get_attribute("class")) == None:
+                self.openBar()
+                self.click(self.browser.find_element_by_class_name("volumeIcon"))
+                self.log("关闭声音")
             # 自动播放
             playStat = self.browser.find_elements_by_css_selector("#playButton")[0].get_attribute("class")
             if playStat == "playButton":

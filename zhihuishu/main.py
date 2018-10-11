@@ -99,7 +99,7 @@ mw.pushButton_3.clicked.connect(study)
 mw.show()
 if app.exec_() == 0:
     if z != None:
-        z.quit()
+        z.browser.quit()
     sys.exit()
 
 
