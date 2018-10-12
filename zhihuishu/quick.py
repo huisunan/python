@@ -48,7 +48,7 @@ class zhihuishu():
         if len(self.browser.find_elements_by_class_name("wrap_popboxes")) > 0:
             self.click(self.browser.find_element_by_class_name("popbtn_yes"))
             self.log("关闭提示框")
-            self.sleep(1,3)
+            self.sleep(1, 3)
 
     #关闭学习卡片
     def closeTip(self):
@@ -60,17 +60,23 @@ class zhihuishu():
             self.sleep(1, 3)
 
 
-    #开始自动刷课
+    # 开始自动刷课
     def study(self):
         name = None
+        currentTime = ''
+        totalTime = ''
         while True:
             if re.search("http://study.zhihuishu.com/learning/videoList", self.browser.current_url) == None:
                 self.log("没有正确打开页面")
                 break
             if name is None:
-                name = self.browser.find_element_by_id("lessonOrder").text
-                self.log(name)
-                self.label.setText(name)
+                try:
+                    name = self.browser.find_element_by_id("lessonOrder").text
+                    self.log(name)
+                    self.label.setText(name)
+                except:
+                    print('异常')
+                    continue
             self.openBar()
             time.sleep(1)
             try:
@@ -82,18 +88,18 @@ class zhihuishu():
                 ic = int(cArr[0]) * 60 * 60 + int(cArr[1]) * 60 + int(cArr[2])
                 it = int(tArr[0]) * 60 * 60 + int(tArr[1]) * 60 + int(tArr[2])
                 # self.bar.valueChanged(int(ic * 100 / it))
-                self.bar.setValue(int((ic * 100) / it))
+                if it != 0 and ic != 0:
+                    try:
+                        value = int((ic * 100) / it)
+                        self.bar.setValue(value)
+                    except Exception:
+                        print("工具条异常")
+
 
             except :
                 self.log('异常')
             # 自动跳转
-            if re.search("100%",self.browser.find_elements_by_css_selector(".progressbar_box>div")[0].get_attribute("style")) or (currentTime == totalTime and currentTime != "" and currentTime != ""):
-
-                lastLesson = self.browser.find_elements_by_css_selector(".next_lesson_bg")[0].get_attribute("style")
-                if re.search("none", lastLesson) != None and currentTime == totalTime:
-                    self.log("success")
-                    break
-
+            if re.search("100%",self.browser.find_elements_by_css_selector(".progressbar_box>div")[0].get_attribute("style")) or ((currentTime == totalTime) and currentTime != "" and currentTime != ""):
                 self.openBar()
                 try:
                     self.click(self.browser.find_elements_by_css_selector("#nextBtn")[0])
@@ -101,6 +107,10 @@ class zhihuishu():
                     self.openBar()
                     self.click(self.browser.find_elements_by_css_selector("#nextBtn")[0])
                 self.log("下一节")
+                lastLesson = self.browser.find_elements_by_css_selector(".next_lesson_bg")[0].get_attribute("style")
+                if re.search("none", lastLesson) is not None:
+                    self.log("success")
+                    break
                 name = None
                 time.sleep(5)
                 continue

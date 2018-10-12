@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QThread,pyqtSignal
+from PyQt5.QtCore import QThread, pyqtSignal
 import time
 import requests
 import sys
@@ -11,7 +11,10 @@ class start(QThread):
         super(start, self).__init__(parent)
     def run(self):
         handles = z.browser.window_handles
-        z.browser.switch_to_window(handles[-1])
+        for h in handles:
+            z.browser.switch_to_window(h)
+            if 'http://study.zhihuishu.com/learning/videoList' in z.browser.current_url:
+                break
         z.closeWarning()
         z.closeTip()
         w.study.start()
@@ -126,3 +129,7 @@ if app.exec_() == 0:
     if z != None:
         z.browser.quit()
 sys.exit()
+
+
+
+
