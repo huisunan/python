@@ -74,8 +74,6 @@ class StartClass(QThread):
         elif self.type == 'MicrosoftEdge':
             self.browser.execute_script('document.querySelector("#nextBtn").click()')
 
-
-
     def __close_volume(self):
         self.__open_bar()
         try:
@@ -83,9 +81,10 @@ class StartClass(QThread):
                 self.browser.find_element_by_class_name("volumeIcon").click()
                 return "have"
         except:
-            self.__open_bar()
-            self.browser.find_element_by_class_name("volumeIcon").click()
-            return "have"
+            if "volumeNone" not in self.browser.find_element_by_class_name("volumeBox").get_attribute("class"):
+                self.__open_bar()
+                self.browser.find_element_by_class_name("volumeIcon").click()
+                return "have"
         return "had"
 
     def __start_accelerate(self):
@@ -142,7 +141,7 @@ class StartClass(QThread):
     def __write_cookies(self):
         with open('cookie.coo', 'w', encoding='utf-8') as f:
             s = str(self.browser.get_cookies())
-            s.replace('null', 'None');
+            s.replace('null', 'None')
             s.replace('false', 'False')
             f.write(s)
 
@@ -175,6 +174,7 @@ class StartClass(QThread):
                         break
                     else:
                         self.__jump_next()
+                        self.sinOut_str.emit(self.__get_class_name() + "已完成")
                         self.sinOut_str.emit("跳转到下一节")
                         newName = self.__get_class_name()
                         while True:
@@ -185,6 +185,7 @@ class StartClass(QThread):
                             time.sleep(0.5)
                 else:
                     if self.__get_select_condition() == "have":
+                        time.sleep(2)
                         self.__close_select()
                         self.sinOut_str.emit("关闭选择题")
             elif self.__get_play_state() == "play":

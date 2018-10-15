@@ -78,7 +78,6 @@ def check_browser_version(s):
             down_load(down_path+w_version+'/'+'chromedriver_win32.zip','chromedriver_win32.zip')
             f = zipfile.ZipFile('chromedriver_win32.zip', 'r')
             f.extractall()
-            os.remove('chromedriver_win32.zip')
         except:
             return 'not'
 
